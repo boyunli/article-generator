@@ -36,7 +36,9 @@ class Wbzj():
 
     def _extract(self, href, referer, tag):
         resp = rget(href, referer=referer)
+        if not resp: return
         html = etree.HTML(resp.content)
+        if not html: return
 
         title = html.xpath('//*[@class="title"]/h1/text()')
         if title:
