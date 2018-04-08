@@ -23,4 +23,5 @@ public class NewsServiceImpl implements NewsService {
     public List<News> findBySecondLike(String second) {
         return newsRepository.findBySecondLike(second);
     }
+
 }

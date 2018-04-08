@@ -11,8 +11,7 @@ public interface NewsRepository extends ElasticsearchRepository<News, String> {
 
     /**
      * AND Query
-     * @param second
-     * @param score
+     * @param tag
      * @return
      */
     public List<News> findByTag(String tag);
