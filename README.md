@@ -1,2 +1,2 @@
-# article-generator
-seo tool:  article generator
+# news-generator
+seo tool:  news generator
