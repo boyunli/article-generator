@@ -13,10 +13,11 @@ public class Synonyms {
 	private static Hashtable<String, String> hashtable = new Hashtable<String, String>();
 	
 	private static void init() {
-		if ((new File("./hashtable.ser")).exists())
-			Synonyms.hashtable = (new SerializableHashtable()).load("./hashtable.ser").get();
+		if ((new File("/home/lily/jwork/hashtable.ser")).exists())
+			Synonyms.hashtable = (new SerializableHashtable()).load("/home/lily/jwork/hashtable.ser").get();
 		else {
-			ExcelOperator operator = new ExcelOperator("d:/idea_workspace/00/article-generator/src/main/java/top/pydream/utils/synonyms.xls");
+//			ExcelOperator operator = new ExcelOperator("d:/idea_workspace/00/article-generator/src/main/java/top/pydream/utils/synonyms.xls");
+			ExcelOperator operator = new ExcelOperator("/home/lily/jwork/synonyms.xls");
 			ArrayList<String[]> pairs = new ArrayList<String[]>();
 			pairs.addAll(operator.getPairs(0, 0, 1));
 			pairs.addAll(operator.getPairs(0, 3, 1));
@@ -24,7 +25,8 @@ public class Synonyms {
 			operator.close();
 			
 			SerializableHashtable serializableHashtable = new SerializableHashtable(pairs);
-			serializableHashtable.store("d:/idea_workspace/00/article-generator/src/main/java/top/pydream/utils/hashtable.ser");
+//			serializableHashtable.store("d:/idea_workspace/00/article-generator/src/main/java/top/pydream/utils/hashtable.ser");
+			serializableHashtable.store("/home/lily/jwork/hashtable.ser");
 			Synonyms.hashtable = serializableHashtable.get();
 		}
 	}
