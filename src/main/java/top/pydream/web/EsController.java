@@ -1,5 +1,6 @@
 package top.pydream.web;
 
+import org.codehaus.groovy.runtime.typehandling.IntegerMath;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -7,12 +8,9 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import top.pydream.domain.AjaxResponseBody;
-import top.pydream.domain.News;
-import top.pydream.domain.PseudoNews;
-import top.pydream.domain.SearchForm;
-import top.pydream.domain.Account;
+import top.pydream.domain.*;
 import top.pydream.service.AccountService;
+import top.pydream.service.AdTemplateService;
 import top.pydream.service.NewsService;
 import top.pydream.utils.Synonyms;
 
@@ -29,6 +27,9 @@ public class EsController {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private AdTemplateService adTemplateService;
 
     @RequestMapping(value = "/api/news/like/find", method = RequestMethod.GET)
     public String findBySecondLike(@RequestParam(value = "keyword") String keyword) {
@@ -55,13 +56,17 @@ public class EsController {
         }
 
         Account account = accountService.findByWeixin(searchForm.getWechat());
+        Integer maxId = adTemplateService.findMaxId();
         String keyword = searchForm.getKeyword();
         List<News> news = newsService.findBySecondLike(keyword);
         List<News> subNews = news.subList(0, 3);
         List<PseudoNews> pseudoNews = new ArrayList<PseudoNews>();
         for (News anew: subNews) {
+            long random = Math.round(Math.random()*(maxId-1) + 1);
+            AdTemplate template = adTemplateService.findById(random);
             String replaceNew = Synonyms.synonymsReplacement(anew.getSecond(), 0.6);
             String union = keyword + "。" + account.getDesc() + "<br/>"
+                    + template.getTemplate() + "<br/>"
                     + replaceNew + keyword + "<br/>"
                     + "以上就是" + keyword + "全部介绍，感兴趣的小伙伴赶快来资讯我们吧，谢谢阅读。";
             pseudoNews.add(new PseudoNews(anew.getTitle(), anew.getTag(), union));
