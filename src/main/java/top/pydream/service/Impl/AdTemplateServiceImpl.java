@@ -6,6 +6,7 @@ import top.pydream.domain.AdTemplate;
 import top.pydream.service.AdTemplateService;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 public class AdTemplateServiceImpl implements AdTemplateService{
@@ -19,7 +20,9 @@ public class AdTemplateServiceImpl implements AdTemplateService{
     }
 
     @Override
-    public Integer findMaxId() {
-        return adTemplateMapper.selectMaxId();
+    public List<AdTemplate> findRelatedAds(String wechat) {
+        return adTemplateMapper.selectRelatedAds(wechat);
     }
+
+
 }

@@ -13,9 +13,10 @@
         from pseudo_ad_template
         where id = #{id}
     </select>
-    <select id="selectMaxId" resultType="int">
-        select max(id)
+    <select id="selectRelatedAds" resultMap="BaseResultMap">
+        select id
         from pseudo_ad_template
+        where template like concat('%',#{wechat},'%')
     </select>
 
 </mapper>

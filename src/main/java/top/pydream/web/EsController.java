@@ -51,20 +51,27 @@ public class EsController {
             return ResponseEntity.badRequest().body(result);
         }
 
-        Account account = accountService.findByWeixin(searchForm.getWechat());
-        Integer maxId = adTemplateService.findMaxId();
+        String wechat = searchForm.getWechat();
+        Account account = accountService.findByWeixin(wechat);
+        List<AdTemplate> ads = adTemplateService.findRelatedAds(wechat);
+        List<Long> ids = new ArrayList<>();
+        ads.forEach(ad -> ids.add(ad.getId()));
+        Long[] idArray = new Long[ids.size()];
+        idArray = ids.toArray(idArray);
+
         String keyword = searchForm.getKeyword();
         List<News> news = newsService.findBySecondLike(keyword);
         List<News> subNews = news.subList(0, 3);
         List<PseudoNews> pseudoNews = new ArrayList<PseudoNews>();
         for (News anew: subNews) {
-            long random = Math.round(Math.random()*(maxId-1) + 1);
+            int index = (int) Math.random()*idArray.length;
+            long random = idArray[index];
             AdTemplate template = adTemplateService.findById(random);
             String replaceNew = Synonyms.synonymsReplacement(anew.getSecond(), 0.6);
             String union = keyword + "。" + account.getDesc() + "<br/>"
                     + template.getTemplate() + "<br/>"
                     + replaceNew + keyword + "<br/>"
-                    + "以上就是" + keyword + "全部介绍，感兴趣的小伙伴赶快来资讯我们吧，谢谢阅读。";
+                    + "以上就是" + keyword + "全部内容，一起交流更多腕表知识，欢迎添加腕尚表业微信，感谢阅读！";
             pseudoNews.add(new PseudoNews(anew.getTitle(), anew.getTag(), union));
         }
         if (pseudoNews.isEmpty()) {
