@@ -71,7 +71,7 @@ class Wbzj():
         first = trim(''.join(start))
         sText = [''.join(p.xpath('.//text()'))
                  for p in ps[start_index+1:last_index]
-                 if ''.join(p.xpath('.//text()'))]
+                 if trim(''.join(p.xpath('.//text()')))]
         second = trim('&&&'.join(sText))
         third = trim(''.join(last))
 

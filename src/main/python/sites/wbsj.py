@@ -53,7 +53,7 @@ class Wbsj():
 
         divs = html.xpath('//div[@class="ct"]//text()')
         first = third = ''
-        sText = [''.join(div) for div in divs if div and not '\xa0' in div]
+        sText = [''.join(div) for div in divs if trim(div)]
         second = trim('&&&'.join(sText))
 
         logger.debug('\033[96m title:{}; href:{}; tag:{}; first:{}; second:{}; third:{} \033[0m'
