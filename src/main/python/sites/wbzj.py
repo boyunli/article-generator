@@ -2,7 +2,7 @@ from lxml import etree
 from urllib.parse import urljoin
 
 from python.requests_pkg import request_get as rget
-from python.utils import trim
+from python.utils import trim, filter_
 from python.settings_dev import logger
 from python.pipelines import NewsPipeline
 
@@ -75,6 +75,7 @@ class Wbzj():
         second = trim('&&&'.join(sText))
         third = trim(''.join(last))
 
+        if filter_(second): return
         logger.debug('\033[96m title:{}; href:{}; tag:{}; first:{}; second:{}; third:{} \033[0m'
                              .format(title, href, tag, len(first), len(second), len(third)))
         return {

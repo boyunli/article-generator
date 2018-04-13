@@ -2,7 +2,7 @@ from lxml import etree
 from urllib.parse import urljoin
 
 from python.requests_pkg import request_get as rget
-from python.utils import trim
+from python.utils import trim, filter_
 from python.settings_dev import logger
 from python.pipelines import NewsPipeline
 
@@ -65,7 +65,7 @@ class NanRenWo():
 
         publish_time = html.xpath('//div[@class="source fl"]/span[@class="item01"]/text()')
         publish_time = publish_time if publish_time else html.xpath('//*[@class="time"]/text()')
-        publish_time = publish_time[0].split('\u3000') if publish_time else '-1'
+        publish_time = publish_time[0].split('\u3000')[0] if publish_time else '-1'
         author = html.xpath('//*[@class="name"]//strong/text()')
         author = author[0] if author else '-1'
 
@@ -94,6 +94,7 @@ class NanRenWo():
             sText = [ s for s in sText if s]
             second = trim('&&&'.join(sText))
 
+        if filter_(second): return
         logger.debug('\033[96m title:{}; href:{}; tag:{}; first:{}; second:{}; third:{} \033[0m'
                              .format(title, href, tag, len(first), len(second), len(third)))
         return {
