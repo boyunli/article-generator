@@ -8,18 +8,4 @@ import java.util.List;
 
 @Component("NewsRepository")
 public interface NewsRepository extends ElasticsearchRepository<News, String> {
-
-    /**
-     * AND Query
-     * @param tag
-     * @return
-     */
-    public List<News> findByTag(String tag);
-
-    /**
-     * Like Query
-     * @param second
-     * @return
-     */
-    List<News> findBySecondLike(String second);
 }

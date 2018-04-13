@@ -6,7 +6,5 @@ import java.util.List;
 
 public interface NewsService {
 
-    List<News> findByTag(String tag);
-
-    List<News> findBySecondLike(String second);
+    List<News> searchSecond(Integer pageNumber, Integer pageSize, String second);
 }

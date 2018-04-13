@@ -16,8 +16,8 @@ public class Synonyms {
 		if ((new File("/home/lily/jwork/hashtable.ser")).exists())
 			Synonyms.hashtable = (new SerializableHashtable()).load("/home/lily/jwork/hashtable.ser").get();
 		else {
-//			ExcelOperator operator = new ExcelOperator("d:/idea_workspace/00/article-generator/src/main/java/top/pydream/utils/synonyms.xls");
-			ExcelOperator operator = new ExcelOperator("/home/lily/jwork/synonyms.xls");
+			ExcelOperator operator = new ExcelOperator("d:/idea_workspace/00/article-generator/src/main/java/top/pydream/utils/synonyms.xls");
+//			ExcelOperator operator = new ExcelOperator("/home/lily/jwork/synonyms.xls");
 			ArrayList<String[]> pairs = new ArrayList<String[]>();
 			pairs.addAll(operator.getPairs(0, 0, 1));
 			pairs.addAll(operator.getPairs(0, 3, 1));

@@ -1,5 +1,7 @@
 package top.pydream.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -7,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import top.pydream.domain.*;
 import top.pydream.service.AccountService;
 import top.pydream.service.AdTemplateService;
+import top.pydream.service.Impl.NewsServiceImpl;
 import top.pydream.service.NewsService;
+import top.pydream.utils.Common;
 import top.pydream.utils.Synonyms;
 
 import javax.validation.Valid;
@@ -17,6 +21,9 @@ import java.util.stream.Collectors;
 
 @RestController
 public class EsController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(EsController.class);
+
+    private static String DELIMITER = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
     @Autowired
     private NewsService newsService;
@@ -26,18 +33,6 @@ public class EsController {
 
     @Autowired
     private AdTemplateService adTemplateService;
-
-    @RequestMapping(value = "/api/news/like/find", method = RequestMethod.GET)
-    public String findBySecondLike(@RequestParam(value = "keyword") String keyword) {
-        List<News> news = newsService.findBySecondLike(keyword);
-        List<News> subNews = news.subList(0, 1);
-        String replaceNew = "";
-        for (News anew: subNews) {
-            replaceNew = Synonyms.synonymsReplacement(anew.getSecond(), 0.6);
-        }
-        return replaceNew;
-    }
-
 
     @PostMapping("/search")
     public ResponseEntity<?> createPseudo(@Valid @RequestBody SearchForm searchForm, Errors errors) {
@@ -56,24 +51,34 @@ public class EsController {
         List<AdTemplate> ads = adTemplateService.findRelatedAds(wechat);
         List<Long> ids = new ArrayList<>();
         ads.forEach(ad -> ids.add(ad.getId()));
-        Long[] idArray = new Long[ids.size()];
-        idArray = ids.toArray(idArray);
 
         String keyword = searchForm.getKeyword();
-        List<News> news = newsService.findBySecondLike(keyword);
-        List<News> subNews = news.subList(0, 3);
-        List<PseudoNews> pseudoNews = new ArrayList<PseudoNews>();
-        for (News anew: subNews) {
-            int index = (int) Math.random()*idArray.length;
-            long random = idArray[index];
+        List<News> news = newsService.searchSecond(0,100, keyword);
+        int newsNum = news.size();
+        LOGGER.info("\n searchNews: 匹配到news数量： [" + newsNum + "] \n ");
+        List<String> paragraphs = Common.divideParas(news);
+
+        List<PseudoNews> pseudoNews = new ArrayList<>();
+        for (int i=0; i<=3; i++){
+            int[] indexParams = Common.randomPara(1, paragraphs.size()-1, 4);
+            String second = "";
+            String third = "";
+            second += paragraphs.get(indexParams[0]) + paragraphs.get(indexParams[1]);
+            third += paragraphs.get(indexParams[2]) + paragraphs.get(indexParams[3]);
+
+            int index = (int) Math.round(Math.random()*(ids.size()-1));
+            long random = ids.get(index);
             AdTemplate template = adTemplateService.findById(random);
-            String replaceNew = Synonyms.synonymsReplacement(anew.getSecond(), 0.6);
-            String union = keyword + "。" + account.getDesc() + "<br/>"
-                    + template.getTemplate() + "<br/>"
-                    + replaceNew + keyword + "<br/>"
-                    + "以上就是" + keyword + "全部内容，一起交流更多腕表知识，欢迎添加腕尚表业微信，感谢阅读！";
-            pseudoNews.add(new PseudoNews(anew.getTitle(), anew.getTag(), union));
+            String union = DELIMITER + keyword + "。" + account.getDesc() + "<br/>"
+                    + DELIMITER + template.getTemplate() + "<br/>"
+                    + DELIMITER + Synonyms.synonymsReplacement(second, 0.6) + keyword + "。<br/>"
+                    + DELIMITER + Synonyms.synonymsReplacement(third, 0.6)  + "<br/>"
+                    + DELIMITER + "以上就是" + keyword + "全部内容，一起交流更多腕表知识，欢迎添加腕尚表业微信，感谢阅读！";
+            int newsIndex = (int) Math.round(Math.random()*(newsNum-1));
+            News randomNews = news.get(newsIndex);
+            pseudoNews.add(new PseudoNews(randomNews.getTitle(), randomNews.getTag(), union));
         }
+
         if (pseudoNews.isEmpty()) {
             result.setMsg("没有符合 " + keyword + " 的伪原创， 请换一个关键词试试!");
         } else {
