@@ -1,7 +1,8 @@
 from lxml import etree
+from urllib.parse import urljoin
 
 from python.requests_pkg import request_get as rget
-from python.utils import trim
+from python.utils import trim, filter_
 from python.settings_dev import logger
 from python.pipelines import NewsPipeline
 
@@ -16,25 +17,27 @@ class Wbzj():
         html = etree.HTML(resp.content)
         typeHrefs = html.xpath('//div[@class="sub_nav"]/div[@class="wrapper"]/ul/li//a/@href')
 
-        details = []
         for url in typeHrefs:
-            resp = rget(url)
-            if not resp: continue
-            html = etree.HTML(resp.content)
-            tag = ''
-            if 'reviews' in url: tag = '时计鉴赏'
+            pages = [urljoin(url, 'p{}.html'.format(page)) for page in range(1, 5)]
+            pages[0] = url
+            details = []
+            for page_url in pages:
+                resp = rget(page_url)
+                if not resp: continue
+                html = etree.HTML(resp.content)
 
-            hrefs = set(html.xpath('//dl[position()<last()]//a/@href|//a/@href'))
-            for href in hrefs:
-                try:
-                    item = self._extract(href, url, tag)
-                    if not item: continue
-                    details.append(item)
-                except IndexError:
-                    import pdb;pdb.set_trace()
-        NewsPipeline().save(details)
+                hrefs = set(html.xpath('//dl[position()<last()]//a/@href|//a/@href'))
+                for href in hrefs:
+                    try:
+                        item = self._extract(href, page_url)
+                        if not item: continue
+                        details.append(item)
+                    except IndexError:
+                        # 像这种很可能是网络原因 导致失败，需要将失败的href写入 某个队列中，待重爬
+                        continue
+                NewsPipeline().save(details)
 
-    def _extract(self, href, referer, tag):
+    def _extract(self, href, referer):
         resp = rget(href, referer=referer)
         if not resp: return
         html = etree.HTML(resp.content)
@@ -46,6 +49,8 @@ class Wbzj():
         else:
             return
 
+        tag = html.xpath('//*[@class="breadcrumb left"]/p/a[2]/text()')
+        tag = tag[0] if tag else '-1'
         publish_time = html.xpath('//*[@class="article-attr"]/span[1]/text()')
         publish_time = publish_time[0] if publish_time else ''
         author = html.xpath('//*[@class="article-attr"]/span[4]/text()')
@@ -64,12 +69,15 @@ class Wbzj():
             last = ps[index].xpath('.//text()')
 
         first = trim(''.join(start))
-        sText = [''.join(p.xpath('.//text()')) for p in ps[start_index+1:last_index]]
-        second = trim(''.join(sText))
+        sText = [''.join(p.xpath('.//text()'))
+                 for p in ps[start_index+1:last_index]
+                 if trim(''.join(p.xpath('.//text()')))]
+        second = trim('&&&'.join(sText))
         third = trim(''.join(last))
 
-        logger.debug('\033[96m title:{}; href:{}; first:{}; second:{}; third:{} \033[0m'
-                             .format(title, href, len(first), len(second), len(third)))
+        if filter_(second): return
+        logger.debug('\033[96m title:{}; href:{}; tag:{}; first:{}; second:{}; third:{} \033[0m'
+                             .format(title, href, tag, len(first), len(second), len(third)))
         return {
             'site': self.site,
             'tag': tag,
