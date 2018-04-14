@@ -27,3 +27,4 @@ target/
 *.iml
 __pycache__/
 hashtable.ser
+*.properties
