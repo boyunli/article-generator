@@ -93,6 +93,7 @@ class NanRenWo():
             sText = html.xpath('//*[@class="list"]//@data-text')
             sText = [ s for s in sText if s]
             second = trim('&&&'.join(sText))
+            if not second: return
 
         if filter_(second): return
         logger.debug('\033[96m title:{}; href:{}; tag:{}; first:{}; second:{}; third:{} \033[0m'

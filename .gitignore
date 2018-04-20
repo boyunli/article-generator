@@ -28,3 +28,4 @@ target/
 __pycache__/
 hashtable.ser
 *.properties
+*.xlsx
