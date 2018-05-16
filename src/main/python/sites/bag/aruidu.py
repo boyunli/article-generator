@@ -15,8 +15,11 @@ class Aruidu():
     def parse(self):
         resp = rget(self.site_url)
         html = etree.HTML(resp.content)
-        total_url = ''.join(html.xpath('//div[@id="pager"]/a[@class="last"]/@href'))
-        pages = parse.parse_qs(parse.urlsplit(total_url).query)['page'][0]
+        try:
+            total_url = ''.join(html.xpath('//div[@id="pager"]/a[@class="last"]/@href'))
+            pages = parse.parse_qs(parse.urlsplit(total_url).query)['page'][0]
+        except:
+            pages = 12
         urls = self._construct_page_url(int(pages)+1)
 
         details = []
@@ -49,21 +52,20 @@ class Aruidu():
         publish_time = other[1].strip()
         author = other[0].strip() if other[0] else '-1'
 
-        first = third = ''
-        second = ''.join(html.xpath('//div[@class="box_1"]/div//span[string-length(text()) >1]/text()'))
-        second = trim('。&&&'.join(second.split('。')))
-        if filter_(second): return
-        logger.debug('\033[96m title:{}; href:{}; tag:{}; first:{}; second:{}; third:{} \033[0m'
-                             .format(title, href, tag, len(first), len(second), len(third)))
+        content = ''.join(html.xpath('//div[@class="box_1"]/div//span[string-length(text()) >1]/text()'))
+        if not content:
+            content = ''.join(html.xpath('//div[@class="box_1"]/div//p[string-length(text()) >1]/text()'))
+        content = trim('。&&&'.join(content.split('。')))
+        if filter_(content) and not content: return
+        logger.debug('\033[96m title:{}; href:{}; tag:{}; content:{}; \033[0m'
+                             .format(title, href, tag, len(content)))
         return {
             'category': '包包',
             'site': self.site,
             'tag': tag,
             'news_url': href,
             'title': title,
-            'first': first,
-            'second': second,
-            'third': third,
+            'content': content,
             'author': author,
             'publish_time': publish_time,
         }

@@ -29,9 +29,7 @@ class NewsPipeline():
             site = item['site']
             tag = item['tag']
             title = item['title']
-            first = item['first']
-            second = item['second']
-            third = item['third']
+            content = item['content']
             author = item['author']
             news_url = item['news_url']
             publish_time = item['publish_time']
@@ -43,18 +41,14 @@ class NewsPipeline():
                         title = title,
                         defaults={
                             'tag': tag,
-                            'first': first,
-                            'second': second,
-                            'third': third,
+                            'content': content,
                             'author': author,
                             'news_url': news_url,
                             'publish_time': publish_time,
                         }
                     )
                 if not news_created:
-                    news.first = first
-                    news.second = second
-                    news.third = third
+                    news.content = content
                     news.author = author
                     news.news_url = news_url
                     news.publish_time = publish_time
