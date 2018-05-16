@@ -52,23 +52,22 @@ class Wbsj():
         author = author[0].split('：')[1] if author else ''
 
         divs = html.xpath('//div[@class="ct"]//text()')
-        first = third = ''
-        sText = [''.join(div) for div in divs if trim(div)]
-        second = trim('&&&'.join(sText))
-        if not second: return
-
-        if filter_(second): return
-        logger.debug('\033[96m title:{}; href:{}; tag:{}; first:{}; second:{}; third:{} \033[0m'
-                             .format(title, href, tag, len(first), len(second), len(third)))
+        sText = ''.join(divs)
+        if len(sText) <= 100:
+            content = trim(sText)
+        else:
+            sText = sText.split('。')
+            content = trim('。&&&'.join(sText))
+        if filter_(content) or not content: return
+        logger.debug('\033[96m title:{}; href:{}; tag:{}; content:{}\033[0m'
+                             .format(title, href, tag, len(content)))
         return {
             'category': '手表',
             'site': self.site,
             'tag': tag,
             'news_url': href,
             'title': title,
-            'first': first,
-            'second': second,
-            'third': third,
+            'content': content,
             'author': author,
             'publish_time': publish_time,
         }

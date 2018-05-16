@@ -56,45 +56,28 @@ class Wbzj():
         author = html.xpath('//*[@class="article-attr"]/span[4]/text()')
         author = author[0].split('：')[1] if author else ''
 
-        ps = html.xpath('//*[@class="article"]//p')
-        start_index = 0
-        start = ps[start_index].xpath('.//text()')
-        if not start:
-            start_index = 1
-            start = ps[start_index].xpath('.//text()')
-        last_index = -1
-        last = ps[last_index].xpath('.//text()')
-        if not last:
-            index = -2
-            last = ps[index].xpath('.//text()')
+        ps = html.xpath('//*[@class="article"]//p/text()')
+        sText = ''.join(ps)
+        if len(sText) <= 100:
+            content = trim(sText)
+        else:
+            sText = sText.split('。')
+            content = trim('。&&&'.join(sText))
 
-        first = trim(''.join(start))
-        sText = [''.join(p.xpath('.//text()'))
-                 for p in ps[start_index+1:last_index]
-                 if trim(''.join(p.xpath('.//text()')))]
-        second = trim('&&&'.join(sText))
-        if not second: return
-        third = trim(''.join(last))
-
-        if filter_(second): return
-        logger.debug('\033[96m title:{}; href:{}; tag:{}; first:{}; second:{}; third:{} \033[0m'
-                             .format(title, href, tag, len(first), len(second), len(third)))
+        if filter_(content) or not content: return
+        logger.debug('\033[96m title:{}; href:{}; tag:{}; content:{}\033[0m'
+                             .format(title, href, tag, len(content)))
         return {
             'category': '手表',
             'site': self.site,
             'tag': tag,
             'news_url': href,
             'title': title,
-            'first': first,
-            'second': second,
-            'third': third,
+            'content': content,
             'author': author,
             'publish_time': publish_time,
         }
 
 
-
-
 if __name__ == '__main__':
     Wbzj().parse()
-
