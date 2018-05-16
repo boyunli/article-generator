@@ -99,6 +99,7 @@ class NanRenWo():
         logger.debug('\033[96m title:{}; href:{}; tag:{}; first:{}; second:{}; third:{} \033[0m'
                              .format(title, href, tag, len(first), len(second), len(third)))
         return {
+            'category': '手表',
             'site': self.site,
             'tag': tag,
             'news_url': href,

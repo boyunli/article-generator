@@ -1,37 +1,35 @@
-import os
 from lxml import etree
-from urllib.parse import quote
-import pandas as pd
+from urllib.parse import urljoin
 
 from python.requests_pkg import request_get as rget
 from python.utils import trim, filter_
 from python.settings_dev import logger
 from python.pipelines import NewsPipeline
 
-class Wechat():
-    '''
-    根据搜索关键词进行搜索
-    '''
+class Wbzj():
+
+    def __init__(self):
+        self.site = '腕表之家'
+        self.site_url = 'http://news.xbiao.com/auction/'
 
     def parse(self):
-        df = self.load_keywords(4)
-        size = df.size
-        for row in range(0, size):
-            keyword = df.loc[row][0]
-            for page in range(1, 6):
-                url = 'http://weixin.sogou.com/weixin?type=2&query={keyword}&page={page}'\
-                    .format(keyword=quote(keyword.encode('utf-8')), page=page)
-                logger.debug("\033[92m 开始爬取第{}页，关键词:{} \033[0m".format(page, keyword))
-                resp = rget(url)
+        resp = rget(self.site_url)
+        html = etree.HTML(resp.content)
+        typeHrefs = html.xpath('//div[@class="sub_nav"]/div[@class="wrapper"]/ul/li//a/@href')
+
+        for url in typeHrefs:
+            pages = [urljoin(url, 'p{}.html'.format(page)) for page in range(1, 5)]
+            pages[0] = url
+            details = []
+            for page_url in pages:
+                resp = rget(page_url)
                 if not resp: continue
                 html = etree.HTML(resp.content)
-                if not html: continue
-                hrefs = html.xpath('//ul[@class="news-list"]//li//div[@class="txt-box"]/h3/a/@href')
-                if not hrefs: continue
-                details = []
+
+                hrefs = set(html.xpath('//dl[position()<last()]//a/@href|//a/@href'))
                 for href in hrefs:
                     try:
-                        item = self._extract(href, url)
+                        item = self._extract(href, page_url)
                         if not item: continue
                         details.append(item)
                     except IndexError:
@@ -45,18 +43,20 @@ class Wechat():
         html = etree.HTML(resp.content)
         if not html: return
 
-        title = html.xpath('//*[@id="activity-name"]/text()')
+        title = html.xpath('//*[@class="title"]/h1/text()')
         if title:
-            title = trim(title[0])
+            title = title[0]
         else:
             return
 
-        publish_time = html.xpath('//*[@id="post-date"]/text()')
+        tag = html.xpath('//*[@class="breadcrumb left"]/p/a[2]/text()')
+        tag = tag[0] if tag else '-1'
+        publish_time = html.xpath('//*[@class="article-attr"]/span[1]/text()')
         publish_time = publish_time[0] if publish_time else ''
-        author = html.xpath('//*[@id="post-user"]/text()')
-        author = author[0] if author else ''
+        author = html.xpath('//*[@class="article-attr"]/span[4]/text()')
+        author = author[0].split('：')[1] if author else ''
 
-        ps = html.xpath('//*[@id="js_content"]//p')
+        ps = html.xpath('//*[@class="article"]//p')
         start_index = 0
         start = ps[start_index].xpath('.//text()')
         if not start:
@@ -77,11 +77,12 @@ class Wechat():
         third = trim(''.join(last))
 
         if filter_(second): return
-        logger.debug('\033[96m title:{}; href:{}; first:{}; second:{}; third:{} \033[0m'
-                             .format(title, href, len(first), len(second), len(third)))
+        logger.debug('\033[96m title:{}; href:{}; tag:{}; first:{}; second:{}; third:{} \033[0m'
+                             .format(title, href, tag, len(first), len(second), len(third)))
         return {
-            'site': 'http://weixin.sogou.com/',
-            'tag': -1,
+            'category': '手表',
+            'site': self.site,
+            'tag': tag,
             'news_url': href,
             'title': title,
             'first': first,
@@ -91,13 +92,9 @@ class Wechat():
             'publish_time': publish_time,
         }
 
-    def load_keywords(self, sheet_name):
-        file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
-            os.path.abspath(__file__)))), 'resources/keywords.xlsx')
-        df = pd.read_excel(file, sheet_name=sheet_name, encoding='gbk', header=1)
-        return df.drop_duplicates()
+
 
 
 if __name__ == '__main__':
-    Wechat().parse()
+    Wbzj().parse()
 

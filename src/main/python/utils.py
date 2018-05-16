@@ -1,7 +1,7 @@
 import re
 
 def trim(line):
-    return re.sub('[\r\s]', '', line)
+    return re.sub('[\r\s]', '', line)
 
 def filter_(content):
     '''

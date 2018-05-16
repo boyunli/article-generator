@@ -25,6 +25,7 @@ class NewsPipeline():
         for item in watchs:
             dblogger.debug('\033[94m 开始保存文章详细信息:{} \033[0m'\
                         .format(item))
+            category = item['category']
             site = item['site']
             tag = item['tag']
             title = item['title']
@@ -37,6 +38,7 @@ class NewsPipeline():
 
             try:
                 news, news_created = News.get_or_create(
+                        category = category,
                         site = site,
                         title = title,
                         defaults={

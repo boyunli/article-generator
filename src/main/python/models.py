@@ -12,8 +12,9 @@ class BaseModel(Model):
 
 class News(BaseModel):
     '''
-    手表资讯详情
+    资讯详情
     '''
+    category = CharField(verbose_name='类别', max_length=10)  # 手表、包包
     site = CharField(verbose_name='站点', max_length=20)
     tag = CharField(verbose_name='标签', max_length=100)
     title = CharField(verbose_name='标题', max_length=300)
@@ -25,6 +26,6 @@ class News(BaseModel):
     publish_time = CharField(verbose_name='发布时间', max_length=50)
 
     class Meta:
-        db_table = 'watch_news'
+        db_table = 'news'
 
 

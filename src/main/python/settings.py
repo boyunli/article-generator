@@ -6,13 +6,10 @@ import logging.config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# MYSQL_HOST = '127.0.0.1'
-# MYSQL_USER = 'root'
-# MYSQL_PASSWD = 'root.123'
-MYSQL_HOST = '47.52.69.166'
-MYSQL_PASSWD = 'lily.123ll'
-MYSQL_USER = 'lily'
-MYSQL_DB = 'watch'
+MYSQL_HOST = '127.0.0.1'
+MYSQL_USER = 'root'
+MYSQL_PASSWD = 'root.123'
+MYSQL_DB = 'price_system'
 URL = 'mysql+pool://{user}:{passwd}@{host}:{port}/{db}?charset=utf8&max_connections=20&stale_timeout=300'\
     .format(user=MYSQL_USER, passwd=MYSQL_PASSWD,
             host=MYSQL_HOST, port=3306, db=MYSQL_DB)
