@@ -46,14 +46,17 @@ public class EsController {
             return ResponseEntity.badRequest().body(result);
         }
 
+        // 获取微信模板
         String wechat = searchForm.getWechat();
         Account account = accountService.findByWeixin(wechat);
         List<AdTemplate> ads = adTemplateService.findRelatedAds(wechat);
         List<Long> ids = new ArrayList<>();
         ads.forEach(ad -> ids.add(ad.getId()));
 
+        // 获取伪原创 文章
         String keyword = searchForm.getKeyword();
-        List<News> news = newsService.searchContent(0,100, keyword);
+        String category = searchForm.getCategory();
+        List<News> news = newsService.searchContent(0,100, keyword, category);
         int newsNum = news.size();
         LOGGER.info("\n searchNews: 匹配到news数量： [" + newsNum + "] \n ");
         List<String> paragraphs = Common.divideParas(news);
