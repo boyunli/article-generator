@@ -44,21 +44,19 @@ public class NewsServiceImpl implements NewsService {
     private ElasticsearchTemplate elasticsearchTemplate;
 
     @Override
-    public List<News> searchSecond(Integer pageNumber, Integer pageSize,
-                                   String second) {
+    public List<News> searchContent(Integer pageNumber, Integer pageSize,
+                                   String content) {
         if (pageSize == null || pageSize <= 0) {
             pageSize = PAGE_SIZE;
         }
         if (pageNumber == null || pageNumber < DEFAULT_PAGE_NUMBER) {
             pageSize = DEFAULT_PAGE_NUMBER;
         }
-        LOGGER.info("\n searchNews: searchContent [" + second + "] \n ");
+        LOGGER.info("\n searchNews: searchContent [" + content + "] \n ");
 
-        List<String> searchTerms = getIkAnalyzeSearchTerms(second);
-        SearchQuery searchQuery = getNewsSearchQuery(pageNumber, pageSize, searchTerms);
-
+        List<String> searchTerms = getIkAnalyzeSearchTerms(content);
         LOGGER.info("\n searchNews: get IK analyzer terms: " + searchTerms + " \n ");
-
+        SearchQuery searchQuery = getNewsSearchQuery(pageNumber, pageSize, searchTerms);
         Page<News> newsPage = newsRepository.search(searchQuery);
         return newsPage.getContent();
     }
@@ -69,7 +67,7 @@ public class NewsServiceImpl implements NewsService {
         for (String searchTerm: searchTermList) {
             builder.add(QueryBuilders.matchPhraseQuery("title", searchTerm),
                     ScoreFunctionBuilders.weightFactorFunction(1000))
-                    .add(QueryBuilders.matchPhraseQuery("second", searchTerm),
+                    .add(QueryBuilders.matchPhraseQuery("content", searchTerm),
                             ScoreFunctionBuilders.weightFactorFunction(500))
                     .scoreMode(SCORE_MODE_SUM).setMinScore(MIN_SCORE);
         }
@@ -87,7 +85,7 @@ public class NewsServiceImpl implements NewsService {
         AnalyzeRequestBuilder ikRequest = new AnalyzeRequestBuilder(
                 elasticsearchTemplate.getClient(),
                 AnalyzeAction.INSTANCE,
-                "watch",
+                "price_system",
                 searchContent);
         ikRequest.setTokenizer("ik");
         ikRequest.setAnalyzer("ik_smart");

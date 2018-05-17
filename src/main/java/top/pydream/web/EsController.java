@@ -53,7 +53,7 @@ public class EsController {
         ads.forEach(ad -> ids.add(ad.getId()));
 
         String keyword = searchForm.getKeyword();
-        List<News> news = newsService.searchSecond(0,100, keyword);
+        List<News> news = newsService.searchContent(0,100, keyword);
         int newsNum = news.size();
         LOGGER.info("\n searchNews: 匹配到news数量： [" + newsNum + "] \n ");
         List<String> paragraphs = Common.divideParas(news);
@@ -69,10 +69,10 @@ public class EsController {
             int index = (int) Math.round(Math.random()*(ids.size()-1));
             long random = ids.get(index);
             AdTemplate template = adTemplateService.findById(random);
-            String union = DELIMITER + keyword + "。" + account.getDesc() + "<br/>"
-                    + DELIMITER + template.getTemplate() + "<br/>"
-                    + DELIMITER + Synonyms.synonymsReplacement(second, 0.6) + keyword + "。<br/>"
-                    + DELIMITER + Synonyms.synonymsReplacement(third, 0.6)  + "<br/>"
+            String union = DELIMITER + keyword + "。" + account.getDesc() + "<br/><br/>"
+                    + DELIMITER + template.getTemplate() + "<br/><br/>"
+                    + DELIMITER + Synonyms.synonymsReplacement(second, 0.6) + keyword + "。<br/><br/>"
+                    + DELIMITER + Synonyms.synonymsReplacement(third, 0.6)  + "<br/><br/>"
                     + DELIMITER + "以上就是" + keyword + "全部内容，一起交流更多腕表知识，欢迎添加腕尚表业微信，感谢阅读！";
             int newsIndex = (int) Math.round(Math.random()*(newsNum-1));
             News randomNews = news.get(newsIndex);

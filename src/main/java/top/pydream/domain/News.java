@@ -6,16 +6,22 @@ import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.io.Serializable;
 
-@Document(indexName = "watch", type = "news")
+@Document(indexName = "price_system", type = "news")
 public class News implements Serializable{
 
     @Id
     private String id;
     private String title;
     private String tag;
-    private String first;
-    private String second;
-    private String third;
+    private String content;
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 
     @Override
     public String toString() {
@@ -23,9 +29,7 @@ public class News implements Serializable{
                 "id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 ", tag='" + tag + '\'' +
-                ", first='" + first + '\'' +
-                ", second='" + second + '\'' +
-                ", third='" + third + '\'' +
+                ", content='" + content + '\'' +
                 '}';
     }
 
@@ -53,27 +57,4 @@ public class News implements Serializable{
         this.tag = tag;
     }
 
-    public String getFirst() {
-        return first;
-    }
-
-    public void setFirst(String first) {
-        this.first = first;
-    }
-
-    public String getSecond() {
-        return second;
-    }
-
-    public void setSecond(String second) {
-        this.second = second;
-    }
-
-    public String getThird() {
-        return third;
-    }
-
-    public void setThird(String third) {
-        this.third = third;
-    }
 }

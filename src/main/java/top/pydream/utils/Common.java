@@ -17,12 +17,12 @@ public class Common {
     public static List<String> divideParas(List<News> news) {
         List<String> paragraphs = new ArrayList<>();
         for (News anew : news) {
-            String[] seconds = anew.getSecond().split("&&&");
-            for (String second: seconds) {
-                if (second.length() < 20) {
+            String[] contents = anew.getContent().split("&&&");
+            for (String content: contents) {
+                if (content.length() < 20) {
                     continue;
                 } else  {
-                    paragraphs.add(second);
+                    paragraphs.add(content);
                 }
             }
         }
