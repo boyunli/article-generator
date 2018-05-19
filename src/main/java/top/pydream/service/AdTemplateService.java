@@ -8,5 +8,5 @@ public interface AdTemplateService {
 
     AdTemplate findById(Long id);
 
-    List<AdTemplate> findRelatedAds(String wechat);
+    List<AdTemplate> findAdByCategoryAndWechat(String category, String wechat);
 }
