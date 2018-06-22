@@ -14,8 +14,8 @@ public class AccountServiceImpl implements AccountService {
     private AccountMapper accountMapper;
 
     @Override
-    public Account findByWeixin(String wechat) {
-        Account account =accountMapper.selectByWechat(wechat);
+    public Account findByCategoryAndWeixin(String category, String wechat) {
+        Account account = accountMapper.selectByCategoryAndWeixin(category, wechat);
         return account;
     }
 }

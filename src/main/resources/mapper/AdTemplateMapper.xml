@@ -3,6 +3,7 @@
 <mapper namespace="top.pydream.dao.AdTemplateMapper">
     <resultMap id="BaseResultMap" type="top.pydream.domain.AdTemplate">
         <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="category" jdbcType="VARCHAR" property="category"/>
         <result column="template" jdbcType="VARCHAR" property="template"/>
     </resultMap>
     <sql id="Base_Column_List">
@@ -13,10 +14,10 @@
         from pseudo_ad_template
         where id = #{id}
     </select>
-    <select id="selectRelatedAds" resultMap="BaseResultMap">
+    <select id="selectAdByCategoryAndWechat" resultMap="BaseResultMap">
         select id
         from pseudo_ad_template
-        where template like concat('%',#{wechat},'%')
+        where category=#{category} AND template like concat('%',#{wechat},'%')
     </select>
 
 </mapper>

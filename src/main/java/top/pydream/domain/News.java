@@ -13,15 +13,8 @@ public class News implements Serializable{
     private String id;
     private String title;
     private String tag;
+    private String category;
     private String content;
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
 
     @Override
     public String toString() {
@@ -29,6 +22,7 @@ public class News implements Serializable{
                 "id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 ", tag='" + tag + '\'' +
+                ", category='" + category + '\'' +
                 ", content='" + content + '\'' +
                 '}';
     }
@@ -57,4 +51,19 @@ public class News implements Serializable{
         this.tag = tag;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 }

@@ -46,17 +46,27 @@ public class EsController {
             return ResponseEntity.badRequest().body(result);
         }
 
+        // 获取微信模板
         String wechat = searchForm.getWechat();
-        Account account = accountService.findByWeixin(wechat);
-        List<AdTemplate> ads = adTemplateService.findRelatedAds(wechat);
+        String category = searchForm.getCategory();
+        Account account = accountService.findByCategoryAndWeixin(category, wechat);
+        List<AdTemplate> ads = adTemplateService.findAdByCategoryAndWechat(category, wechat);
         List<Long> ids = new ArrayList<>();
         ads.forEach(ad -> ids.add(ad.getId()));
 
+        // 获取伪原创 文章
         String keyword = searchForm.getKeyword();
-        List<News> news = newsService.searchContent(0,100, keyword);
+        List<News> news = newsService.searchContent(0,100, keyword, category);
         int newsNum = news.size();
         LOGGER.info("\n searchNews: 匹配到news数量： [" + newsNum + "] \n ");
         List<String> paragraphs = Common.divideParas(news);
+
+        // 结尾
+        String end = "";
+        if (category.contains("包"))
+            end = "全部内容，一起交流更多包包知识，欢迎添加包尚名品微信，感谢阅读！";
+        else if (category.contains("表"))
+            end = "全部内容，一起交流更多腕表知识，欢迎添加腕尚表业微信，感谢阅读！";
 
         List<PseudoNews> pseudoNews = new ArrayList<>();
         for (int i=0; i<=3; i++){
@@ -73,7 +83,7 @@ public class EsController {
                     + DELIMITER + template.getTemplate() + "<br/><br/>"
                     + DELIMITER + Synonyms.synonymsReplacement(second, 0.6) + keyword + "。<br/><br/>"
                     + DELIMITER + Synonyms.synonymsReplacement(third, 0.6)  + "<br/><br/>"
-                    + DELIMITER + "以上就是" + keyword + "全部内容，一起交流更多腕表知识，欢迎添加腕尚表业微信，感谢阅读！";
+                    + DELIMITER + "以上就是" + keyword + end;
             int newsIndex = (int) Math.round(Math.random()*(newsNum-1));
             News randomNews = news.get(newsIndex);
             pseudoNews.add(new PseudoNews(randomNews.getTitle(), randomNews.getTag(), union));

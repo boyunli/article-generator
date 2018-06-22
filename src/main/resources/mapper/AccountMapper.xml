@@ -3,16 +3,17 @@
 <mapper namespace="top.pydream.dao.AccountMapper">
     <resultMap id="BaseResultMap" type="top.pydream.domain.Account">
         <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="category" jdbcType="VARCHAR" property="category"/>
         <result column="wechat" jdbcType="VARCHAR" property="wechat"/>
         <result column="desc" jdbcType="VARCHAR" property="desc"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, wechat, `desc`
     </sql>
-    <select id="selectByWechat" parameterType="java.lang.String" resultMap="BaseResultMap">
-        select id, wechat, `desc`
+    <select id="selectByCategoryAndWeixin" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select id, category, wechat, `desc`
         from pseudo_account
-        where wechat = #{wechat}
+        where category = #{category} AND wechat = #{wechat}
     </select>
 
 </mapper>

@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
@@ -45,7 +44,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public List<News> searchContent(Integer pageNumber, Integer pageSize,
-                                   String content) {
+                                   String content, String category) {
         if (pageSize == null || pageSize <= 0) {
             pageSize = PAGE_SIZE;
         }
@@ -56,13 +55,22 @@ public class NewsServiceImpl implements NewsService {
 
         List<String> searchTerms = getIkAnalyzeSearchTerms(content);
         LOGGER.info("\n searchNews: get IK analyzer terms: " + searchTerms + " \n ");
-        SearchQuery searchQuery = getNewsSearchQuery(pageNumber, pageSize, searchTerms);
+        SearchQuery searchQuery = getNewsSearchQuery(pageNumber, pageSize, category, searchTerms);
         Page<News> newsPage = newsRepository.search(searchQuery);
         return newsPage.getContent();
     }
 
+    /**
+     * 先根据 category 过滤news，再 进行短语查询 match parse
+     * @param pageNumber  第几页
+     * @param pageSize    每页数量
+     * @param category    类型
+     * @param searchTermList 分词后的短语
+     * @return
+     */
     private SearchQuery getNewsSearchQuery(Integer pageNumber, Integer pageSize,
-                                           List<String> searchTermList) {
+                                           String category, List<String> searchTermList) {
+
         FunctionScoreQueryBuilder builder = QueryBuilders.functionScoreQuery();
         for (String searchTerm: searchTermList) {
             builder.add(QueryBuilders.matchPhraseQuery("title", searchTerm),
@@ -74,12 +82,16 @@ public class NewsServiceImpl implements NewsService {
         Pageable pageable = new PageRequest(pageNumber, pageSize);
         return new NativeSearchQueryBuilder()
                 .withPageable(pageable)
-                .withQuery(builder).build();
+                .withFilter(QueryBuilders.termQuery("category", category))
+                .withQuery(builder)
+                .build();
 
     }
 
     /**
      * 调用 ES 获取 IK分词后结果
+     * @param searchContent news 内容
+     * @return
      */
     private List<String> getIkAnalyzeSearchTerms(String searchContent) {
         AnalyzeRequestBuilder ikRequest = new AnalyzeRequestBuilder(
