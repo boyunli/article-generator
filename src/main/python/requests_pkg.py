@@ -12,7 +12,7 @@ from fake_useragent.errors import FakeUserAgentError
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def _crawl_proxy_ip():
-    resp = requests.get('http://127.0.0.1:8000/?count=5&country=国内')
+    resp = requests.get('http://ubuntu.pydream.com:8000/?types=0&count=5&country=国内')
     socks = json.loads(resp.text)
     sock = random.choice(socks)
     return (sock[0], sock[1])
