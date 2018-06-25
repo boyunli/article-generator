@@ -44,16 +44,16 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public List<News> searchContent(Integer pageNumber, Integer pageSize,
-                                   String content, String category) {
+                                   String keyword, String category) {
         if (pageSize == null || pageSize <= 0) {
             pageSize = PAGE_SIZE;
         }
         if (pageNumber == null || pageNumber < DEFAULT_PAGE_NUMBER) {
             pageSize = DEFAULT_PAGE_NUMBER;
         }
-        LOGGER.info("\n searchNews: searchContent [" + content + "] \n ");
+        LOGGER.info("\n searchNews: searchContent [" + keyword + "] \n ");
 
-        List<String> searchTerms = getIkAnalyzeSearchTerms(content);
+        List<String> searchTerms = getIkAnalyzeSearchTerms(keyword);
         LOGGER.info("\n searchNews: get IK analyzer terms: " + searchTerms + " \n ");
         SearchQuery searchQuery = getNewsSearchQuery(pageNumber, pageSize, category, searchTerms);
         Page<News> newsPage = newsRepository.search(searchQuery);
@@ -90,15 +90,15 @@ public class NewsServiceImpl implements NewsService {
 
     /**
      * 调用 ES 获取 IK分词后结果
-     * @param searchContent news 内容
+     * @param keyword news 内容
      * @return
      */
-    private List<String> getIkAnalyzeSearchTerms(String searchContent) {
+    private List<String> getIkAnalyzeSearchTerms(String keyword) {
         AnalyzeRequestBuilder ikRequest = new AnalyzeRequestBuilder(
                 elasticsearchTemplate.getClient(),
                 AnalyzeAction.INSTANCE,
                 "price_system",
-                searchContent);
+                keyword);
         ikRequest.setTokenizer("ik");
         ikRequest.setAnalyzer("ik_smart");
         List<AnalyzeResponse.AnalyzeToken> ikTokenList = ikRequest.execute().actionGet().getTokens();
