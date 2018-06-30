@@ -64,9 +64,9 @@ public class EsController {
         // 结尾
         String end = "";
         if (category.contains("包"))
-            end = "全部内容，一起交流更多包包知识，欢迎添加包尚名品微信，感谢阅读！";
+            end = "全部内容，一起交流更多包包知识，欢迎添加玲珑皮具微信，感谢阅读！";
         else if (category.contains("表"))
-            end = "全部内容，一起交流更多腕表知识，欢迎添加腕尚表业微信，感谢阅读！";
+            end = "全部内容，一起交流更多腕表知识，欢迎添加微信: 【" + wechat + "】。感谢阅读！";
 
         List<PseudoNews> pseudoNews = new ArrayList<>();
         for (int i=0; i<=3; i++){
@@ -77,6 +77,9 @@ public class EsController {
             third += paragraphs.get(indexParams[2]) + paragraphs.get(indexParams[3]);
 
             int index = (int) Math.round(Math.random()*(ids.size()-1));
+            if (index > ids.size()){
+                index = ids.size() - 1;
+            }
             long random = ids.get(index);
             AdTemplate template = adTemplateService.findById(random);
             String union = DELIMITER + keyword + "。" + account.getDesc() + "<br/><br/>"

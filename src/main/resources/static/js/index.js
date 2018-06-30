@@ -17,6 +17,7 @@ function fire_ajax_submit() {
     search["keyword"] = $("#keyword").val();
     search["wechat"] = $("#wechat").val();
     search["category"] = $("#category").val();
+    // search["category"] = "手表";
 
     $("#btn-search").prop("disabled", true);
 
