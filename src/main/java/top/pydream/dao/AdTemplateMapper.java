@@ -13,4 +13,6 @@ public interface AdTemplateMapper {
 
     List<AdTemplate> selectAdByCategoryAndWechat(@Param("category") String category,
                                                  @Param("wechat") String wechat);
+
+    List<AdTemplate> selectAdByCategory(@Param("category") String category);
 }

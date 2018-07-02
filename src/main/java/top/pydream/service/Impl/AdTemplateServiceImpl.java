@@ -24,5 +24,10 @@ public class AdTemplateServiceImpl implements AdTemplateService{
         return adTemplateMapper.selectAdByCategoryAndWechat(category, wechat);
     }
 
+    @Override
+    public List<AdTemplate> findAdByCategory(String category) {
+        return adTemplateMapper.selectAdByCategory(category);
+    }
+
 
 }
