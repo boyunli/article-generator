@@ -8,7 +8,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 MYSQL_HOST = '127.0.0.1'
 MYSQL_USER = 'root'
-MYSQL_PASSWD = 'root.123'
+MYSQL_PASSWD = 'cgll.123'
 MYSQL_DB = 'price_system'
 URL = 'mysql+pool://{user}:{passwd}@{host}:{port}/{db}?charset=utf8mb4&max_connections=20&stale_timeout=300'\
     .format(user=MYSQL_USER, passwd=MYSQL_PASSWD,

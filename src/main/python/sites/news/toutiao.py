@@ -1,3 +1,4 @@
+import time
 import re
 
 from lxml import etree
@@ -24,13 +25,14 @@ class TouTiao():
         driver = webdriver.Chrome(options=chrome_options)
         driver.get(url)
         html = etree.HTML(driver.page_source)
-        hrefs = html.xpath('//div[@class="wcommonFeed"]//@href')
+        hrefs = html.xpath('//a[@class="link title"]/@href')
         if not hrefs:
             import pdb;pdb.set_trace()
         logger.debug("\033[92m 开始爬取:{} \033[0m".format(url))
         details = []
         for href in hrefs:
             if href.startswith('http'): continue
+            time.sleep(1)
             try:
                 href = urljoin(self.url, href)
                 item = self._extract(href, url)
