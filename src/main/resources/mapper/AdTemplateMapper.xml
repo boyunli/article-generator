@@ -6,18 +6,28 @@
         <result column="category" jdbcType="VARCHAR" property="category"/>
         <result column="template" jdbcType="VARCHAR" property="template"/>
     </resultMap>
+
     <sql id="Base_Column_List">
         id, wechat, `desc`
     </sql>
+
     <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select template
         from pseudo_ad_template
         where id = #{id}
     </select>
+
     <select id="selectAdByCategoryAndWechat" resultMap="BaseResultMap">
         select id
         from pseudo_ad_template
         where category=#{category} AND template like concat('%',#{wechat},'%')
     </select>
+
+    <select id="selectAdByCategory" resultMap="BaseResultMap">
+        select id
+        from pseudo_ad_template
+        where category=#{category}
+    </select>
+
 
 </mapper>

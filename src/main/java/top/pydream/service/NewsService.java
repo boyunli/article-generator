@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface NewsService {
 
-    List<News> searchContent(Integer pageNumber, Integer pageSize, String content, String category);
+    List<News> searchContent(Integer pageNumber, Integer pageSize, String content);
+
 }
