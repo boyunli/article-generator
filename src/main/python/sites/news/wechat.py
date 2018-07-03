@@ -42,7 +42,7 @@ class Wechat():
 
     def _extract(self, href, referer):
         resp = rget(href, referer=referer)
-        if not resp: return
+        if not resp: self._extract(href, referer=referer)
         html = etree.HTML(resp.content)
         if not html: return
 
@@ -60,8 +60,8 @@ class Wechat():
         if content:
             content = trim('。&&&'.join(content.split('。')))
         else:
-            content = ''.join(html.xpath('//div[@class="mcontent"]//text()'))
-        if filter_(content) or not content: return
+            return
+        content = filter_(content)
         logger.debug('\033[96m title:{}; href:{}; content:{} \033[0m'
                              .format(title, href, len(content)))
 
