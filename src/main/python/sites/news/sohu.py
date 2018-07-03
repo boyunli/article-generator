@@ -17,7 +17,7 @@ class SoHu():
         self.url = 'http://m.sohu.com'
 
     def parse(self):
-        url = 'http://m.sohu.com/ch/8/?_f=m-index_important_hsdh'
+        url = 'http://m.sohu.com/ch/8/'
         resp = rget(url)
         html = etree.HTML(resp.content)
         hrefs = html.xpath('//ul[@class="feed-list-area"]//li/a/@href')
