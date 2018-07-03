@@ -14,17 +14,20 @@ class Wechat():
         self.url = 'http://weixin.sogou.com/'
 
     def parse(self):
-        url = 'http://weixin.sogou.com/pcindex/pc/pc_0/{page}.html'
-        urls = [url.format(page=page) for page in range(1, 6)]
+        purl = 'http://weixin.sogou.com/pcindex/pc/pc_0/{page}.html'
+        urls = [purl.format(page=page) for page in range(1, 6)]
         urls.insert(0, self.url)
 
         for url in urls:
             # 获取当天最新120条新闻
-            resp = rget(url, referer=self.url)
+            resp = rget(url)
             if not resp: continue
             html = etree.HTML(resp.content)
             hrefs = html.xpath('//ul[@id="pc_0_0"]//li/div[@class="txt-box"]/h3/a/@href')
-            if not hrefs: continue
+            if not hrefs:
+                hrefs = html.xpath('//li/div[@class="img-box"]/a/@href')
+            if not hrefs:
+                import pdb;pdb.set_trace()
             logger.debug("\033[92m 开始爬取:{} \033[0m".format(url))
             details = []
             for href in hrefs:
