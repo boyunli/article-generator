@@ -59,7 +59,7 @@ def set_proxies():
     return host, config
 
 def delete_no_use_proxy_ip(ip):
-    requests.get('http://127.0.0.1:8000/delete?ip={ip}'.format(ip=ip))
+    requests.get('http://ubuntu.pydream.com:8000/delete?ip={ip}'.format(ip=ip))
 
 
 def request_get(url, cookies=None, referer=None, timeout=(3.05, 10)):
