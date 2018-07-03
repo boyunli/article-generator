@@ -15,7 +15,7 @@ class Wechat():
 
     def parse(self):
         purl = 'http://weixin.sogou.com/pcindex/pc/pc_0/{page}.html'
-        urls = [purl.format(page=page) for page in range(1, 6)]
+        urls = [purl.format(page=page) for page in range(1, 10)]
         urls.insert(0, self.url)
 
         for url in urls:
