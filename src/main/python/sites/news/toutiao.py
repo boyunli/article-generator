@@ -27,7 +27,7 @@ class TouTiao():
         html = etree.HTML(driver.page_source)
         hrefs = html.xpath('//a[@class="link title"]/@href')
         if not hrefs:
-            import pdb;pdb.set_trace()
+            self.parse()
         logger.debug("\033[92m 开始爬取:{} \033[0m".format(url))
         details = []
         for href in hrefs:

@@ -29,3 +29,4 @@ __pycache__/
 hashtable.ser
 *.properties
 *.xlsx
+src/main/python/settings.py
