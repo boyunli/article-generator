@@ -6,10 +6,11 @@ import json
 import random
 
 import requests
+from selenium import webdriver
 from fake_useragent import UserAgent
 from fake_useragent.errors import FakeUserAgentError
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def _crawl_proxy_ip():
     resp = requests.get('http://ubuntu.pydream.com:8000/?types=0&count=5&country=国内')
@@ -18,13 +19,7 @@ def _crawl_proxy_ip():
     return (sock[0], sock[1])
 
 def get_rotate_headers(referer=None):
-    ua = ''
-    try:
-        ua = UserAgent().random
-    except FakeUserAgentError:
-        with open('user_agent.txt', 'r') as f:
-            uas = f.readlines()
-            ua = random.choice(uas).strip()
+    ua = get_ua()
     headers = {
             "User-Agent": ua,
             "Referer" : referer if referer else None,
@@ -36,6 +31,39 @@ def get_rotate_headers(referer=None):
             "Connection": "keep-alive",
             }
     return headers
+
+def get_ua():
+    ua = ''
+    try:
+        ua = UserAgent().random
+    except FakeUserAgentError:
+        file = os.path.join(BASE_DIR, 'user_agent.txt')
+        with open(file, 'r') as f:
+            uas = f.readlines()
+            ua = random.choice(uas).strip()
+    print('UserAgent: {}'.format(ua))
+    return ua
+
+def get_chrome_options(host=None, origin=None, referer=None, proxy=False):
+    options = webdriver.ChromeOptions()
+    prefs = {"profile.managed_default_content_settings.images":2}
+    options.add_argument('headless')
+    options.add_argument('lang=zh_CN.UTF-8')
+    options.add_argument('user-agent={}'.format(get_ua()))
+    # options.add_argument('--start-maximized')
+    options.add_argument('window-size=1920x1080')
+    if host:
+        options.add_argument('host={}'.format(host))
+    if referer:
+        options.add_argument('referer={}'.format(referer))
+    if origin:
+        options.add_argument('origin={}'.format(origin))
+    # 设置不加载图片
+    options.add_experimental_option("prefs", prefs)
+    if proxy:
+        host, port = _crawl_proxy_ip()
+        options.add_argument('--proxy-server={}:{}'.format(host, port))
+    return options
 
 # 配置 PhantomJS
 def phantomjs_args():

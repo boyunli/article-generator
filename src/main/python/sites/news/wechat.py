@@ -46,9 +46,9 @@ class Wechat():
         html = etree.HTML(resp.content)
         if not html: return
 
-        title = html.xpath('//*[@id="activity-name"]/text()')
+        title = ''.join(html.xpath('//*[@id="activity-name"]/text()'))
         if title:
-            title = trim(title[0])
+            title = trim(title)
         else:
             return
 
@@ -67,7 +67,7 @@ class Wechat():
 
         return {
             'category': 'news',
-            'site': 'http://weixin.sogou.com/',
+            'site': self.url,
             'tag': -1,
             'news_url': href,
             'title': title,
