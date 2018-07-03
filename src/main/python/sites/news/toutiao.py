@@ -24,7 +24,7 @@ class TouTiao():
         driver = webdriver.Chrome(options=chrome_options)
         driver.get(url)
         html = etree.HTML(driver.page_source)
-        hrefs = html.xpath('//a[@class="link title"]/@href')
+        hrefs = html.xpath('//div[@class="wcommonFeed"]//@href')
         if not hrefs:
             import pdb;pdb.set_trace()
         logger.debug("\033[92m 开始爬取:{} \033[0m".format(url))
