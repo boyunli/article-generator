@@ -22,7 +22,7 @@ class SoHu():
         html = etree.HTML(resp.content)
         hrefs = html.xpath('//ul[@class="feed-list-area"]//li/a/@href')
         if not hrefs:
-            import pdb;pdb.set_trace()
+            self.parse()
         details = []
         for href in hrefs:
             if href.startswith('http'): continue
