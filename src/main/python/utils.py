@@ -9,4 +9,4 @@ def filter_(content):
     '''
     #match = re.match(r'.*(雪茄|烟|酒|私服).*', content)
     #return True if match else False
-    return re.sub('[雪茄|烟|酒|私服|药|荡妇|热气球|第一夫人|糖尿病|军c|共产党]', '*', content)
+    return re.sub('[大麻|雪茄|烟|酒|私服|药|荡妇|热气球|第一夫人|糖尿病|军c|共产党]', '*', content)
