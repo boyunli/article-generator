@@ -4,7 +4,7 @@ from lxml import etree
 from urllib.parse import urljoin
 
 from python.requests_pkg import request_get as rget
-from python.utils import trim, filter_
+from python.utils import trim
 from python.settings_dev import logger
 from python.pipelines import NewsPipeline
 
@@ -61,7 +61,6 @@ class SoHu():
             content = trim('。&&&'.join(content.split('。')))
         else:
             return
-        content = filter_(content)
         logger.debug('\033[96m title:{}; href:{}; content:{} \033[0m'
                              .format(title, href, len(content)))
 

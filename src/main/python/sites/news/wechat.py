@@ -2,7 +2,7 @@ import re
 from lxml import etree
 
 from python.requests_pkg import request_get as rget
-from python.utils import trim, filter_
+from python.utils import trim
 from python.settings_dev import logger
 from python.pipelines import NewsPipeline
 
@@ -18,7 +18,7 @@ class Wechat():
         categorys = [9, 4, 11, 2]
         purl = 'http://weixin.sogou.com/pcindex/pc/pc_{category}/{page}.html'
         for category in categorys:
-            urls = [purl.format(page=page, category=category) for page in range(1, 10)]
+            urls = [purl.format(page=page, category=category) for page in range(1, 5)]
             urls.insert(0, 'http://weixin.sogou.com/pcindex/pc/pc_{category}/pc_{category}.html'.format(category=category))
             for url in urls:
                 resp = rget(url)
@@ -62,7 +62,6 @@ class Wechat():
             content = trim('。&&&'.join(content.split('。')))
         else:
             return
-        content = filter_(content)
         logger.debug('\033[96m title:{}; href:{}; content:{} \033[0m'
                              .format(title, href, len(content)))
 

@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 
 from python.requests_pkg import get_chrome_options,\
     request_get as rget
-from python.utils import trim, filter_
+from python.utils import trim
 from python.settings_dev import logger
 from python.pipelines import NewsPipeline
 
@@ -67,7 +67,6 @@ class TouTiao():
             content = '。&&&'.join(content.split('。'))
         else:
             return
-        content = filter_(content)
         logger.debug('\033[96m title:{}; href:{}; content:{} \033[0m'
                              .format(title, href, len(content)))
 
