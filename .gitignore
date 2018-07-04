@@ -30,3 +30,4 @@ hashtable.ser
 *.properties
 *.xlsx
 src/main/python/settings.py
+src/main/celerybeat-schedule
