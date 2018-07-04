@@ -17,10 +17,11 @@ class SoHu():
         self.url = 'http://m.sohu.com'
 
     def parse(self):
-        url = 'http://m.sohu.com/ch/8/'
+        url = 'http://m.sohu.com/ch/23/'
         resp = rget(url)
         html = etree.HTML(resp.content)
-        hrefs = html.xpath('//ul[@class="feed-list-area"]//li/a/@href')
+        hrefs = html.xpath('//div[@class="swiper-wrapper"]/div/a/@href') + \
+            html.xpath('//ul[@class="feed-list-area"]//li/a/@href')
         if not hrefs:
             self.parse()
         details = []

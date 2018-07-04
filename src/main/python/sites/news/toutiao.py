@@ -20,7 +20,7 @@ class TouTiao():
         self.url = 'https://www.toutiao.com'
 
     def parse(self):
-        url = 'https://www.toutiao.com/ch/news_hot/'
+        url = 'https://www.toutiao.com/ch/news_fashion/'
         chrome_options = get_chrome_options()
         driver = webdriver.Chrome(options=chrome_options)
         driver.get(url)

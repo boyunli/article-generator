@@ -14,31 +14,32 @@ class Wechat():
         self.url = 'http://weixin.sogou.com/'
 
     def parse(self):
-        purl = 'http://weixin.sogou.com/pcindex/pc/pc_0/{page}.html'
-        urls = [purl.format(page=page) for page in range(1, 10)]
-        urls.insert(0, self.url)
-
-        for url in urls:
-            # 获取当天最新120条新闻
-            resp = rget(url)
-            if not resp: continue
-            html = etree.HTML(resp.content)
-            hrefs = html.xpath('//ul[@id="pc_0_0"]//li/div[@class="txt-box"]/h3/a/@href')
-            if not hrefs:
-                hrefs = html.xpath('//li/div[@class="img-box"]/a/@href')
-            if not hrefs:
-                import pdb;pdb.set_trace()
-            logger.debug("\033[92m 开始爬取:{} \033[0m".format(url))
-            details = []
-            for href in hrefs:
-                try:
-                    item = self._extract(href, url)
-                    if not item: continue
-                    details.append(item)
-                except IndexError:
-                    # 像这种很可能是网络原因 导致失败，需要将失败的href写入 某个队列中，待重爬
-                    continue
-            NewsPipeline().save(details)
+        #时尚, 八卦, 旅游, 养生
+        categorys = [9, 4, 11, 2]
+        purl = 'http://weixin.sogou.com/pcindex/pc/pc_{category}/{page}.html'
+        for category in categorys:
+            urls = [purl.format(page=page, category=category) for page in range(1, 10)]
+            urls.insert(0, 'http://weixin.sogou.com/pcindex/pc/pc_{category}/pc_{category}.html'.format(category=category))
+            for url in urls:
+                resp = rget(url)
+                if not resp: continue
+                html = etree.HTML(resp.content)
+                hrefs = html.xpath('//ul[@id="pc_0_0"]//li/div[@class="txt-box"]/h3/a/@href')
+                if not hrefs:
+                    hrefs = html.xpath('//li/div[@class="img-box"]/a/@href')
+                if not hrefs:
+                    import pdb;pdb.set_trace()
+                logger.debug("\033[92m 开始爬取:{} \033[0m".format(url))
+                details = []
+                for href in hrefs:
+                    try:
+                        item = self._extract(href, url)
+                        if not item: continue
+                        details.append(item)
+                    except IndexError:
+                        # 像这种很可能是网络原因 导致失败，需要将失败的href写入 某个队列中，待重爬
+                        continue
+                NewsPipeline().save(details)
 
     def _extract(self, href, referer):
         resp = rget(href, referer=referer)
